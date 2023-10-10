@@ -1,4 +1,5 @@
 //jshint esversion:6
+import'dotenv/config';
 import express from 'express';
 import ejs from 'ejs';
 import bodyParser from 'body-parser';
@@ -6,8 +7,11 @@ import mongoose from 'mongoose';
 import { log } from 'console';
 import encrypt from 'mongoose-encryption';
 
+
 const app = express()
 const port = 3000;
+
+
 
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
@@ -25,10 +29,16 @@ async function main() {
 
   // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 
-  const userSchema = {
+  const userSchema = new mongoose.Schema ({
     email: String,
     password: String
-  }
+  })
+
+  
+
+  userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']});
+
+
 
   const User = mongoose.model("User",userSchema);
 
